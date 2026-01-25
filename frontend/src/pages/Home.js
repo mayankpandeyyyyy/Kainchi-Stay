@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import { Bed, Wifi, MapPin, MessageCircle, Info, Navigation, Image as ImageIcon, PhoneCall, X, Users, DoorOpen } from 'lucide-react';
+import { Bed, Wifi, MapPin, MessageCircle, Info, Navigation, Image as ImageIcon, PhoneCall, X} from 'lucide-react';
 
 // Assets
 import ashramImg from '../assets/ashram.png';
@@ -10,6 +10,7 @@ import babaImg from '../assets/baba.jpg';
 const Home = () => {
     const [room, setRoom] = useState(null);
     const [showForm, setShowForm] = useState(false);
+    const [error, setError] = useState(false);
     const [bookingData, setBookingData] = useState({ 
         customerName: '', 
         phoneNumber: '', 
@@ -20,17 +21,28 @@ const Home = () => {
         requirements: '' 
     });
     const whatsappNumber = "917830410814"; 
+    const BACKEND_URL = 'https://kainchi-stay-production.up.railway.app';
+
+    const fetchData = useCallback(async () => {
+        try {
+            const res = await axios.get(`${BACKEND_URL}/api/rooms`);
+            if (res.data) {
+                setRoom(res.data);
+            }
+        } catch (err) {
+            console.error("Connectivity Error:", err);
+            setError(true);
+        }
+    }, [BACKEND_URL]);
 
     useEffect(() => {
-        axios.get('http://localhost:5000/api/rooms')
-            .then(res => setRoom(res.data))
-            .catch(err => console.log(err));
-    }, []);
+        fetchData();
+    }, [fetchData]);
 
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/api/bookings/request-call', bookingData);
+            await axios.post(`${BACKEND_URL}/api/bookings/request-call`, bookingData);
             alert("Jai Maharaj-ji! Your request is sent. We will call you soon.");
             setShowForm(false);
             setBookingData({ customerName: '', phoneNumber: '', checkInDate: '', checkOutDate: '', roomsRequired: 1, guests: 1, requirements: '' });
@@ -39,11 +51,18 @@ const Home = () => {
         }
     };
 
+    if (error) return (
+        <div style={{textAlign: 'center', marginTop: '150px', fontFamily: 'Playfair Display'}}>
+            <h2 style={{color: '#e74c3c'}}>Something went wrong</h2>
+            <p>Please refresh the page or check your internet.</p>
+            <button onClick={() => window.location.reload()} style={{padding: '10px 20px', cursor: 'pointer', borderRadius: '8px', border: 'none', backgroundColor: '#5d6d5e', color: 'white'}}>Refresh Now</button>
+        </div>
+    );
+
     if (!room) return <div style={{textAlign: 'center', marginTop: '150px', fontFamily: 'Playfair Display', fontSize: '1.5rem', color: '#5d6d5e'}}>Peace is loading...</div>;
 
     return (
         <div style={{ paddingTop: '75px' }}>
-            
             {/* 1. TASKBAR */}
             <nav className="navbar" style={{ padding: '0 4%' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'nowrap' }}>
@@ -241,7 +260,6 @@ const Home = () => {
 
             {/* FLOATING ACTION STACK */}
             <div style={{ position: 'fixed', bottom: '30px', right: '30px', display: 'flex', flexDirection: 'column', gap: '15px', zIndex: 3000, alignItems: 'flex-end' }}>
-                {/* Request Callback Labelled Button */}
                 <button 
                     onClick={() => setShowForm(true)}
                     style={{ 
@@ -261,7 +279,6 @@ const Home = () => {
                     <span>Request Call</span>
                 </button>
 
-                {/* WhatsApp Labelled Button */}
                 <a href={`https://wa.me/${whatsappNumber}?text=Jai%20Baba!%20Interested%20in%20stay.`} 
                    target="_blank" rel="noreferrer" 
                    style={{ 

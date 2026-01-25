@@ -11,7 +11,7 @@ const app = express();
 
 // 2. MIDDLEWARE
 // Allow all origins for the deployment phase
-app.use(cors()); 
+app.use(cors({ origin: '*' })); 
 app.use(express.json());
 
 // Logging middleware to track requests in the terminal

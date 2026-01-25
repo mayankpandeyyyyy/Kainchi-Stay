@@ -12,12 +12,15 @@ const Admin = () => {
     const [uploading, setUploading] = useState(false);
     const [newPassword, setNewPassword] = useState('');
 
+    // Updated backend URL
+    const API_URL = 'https://kainchi-stay-production.up.railway.app';
+
     const fetchData = async () => {
         try {
-            const roomRes = await axios.get('http://localhost:5000/api/rooms');
+            const roomRes = await axios.get(`${API_URL}/api/rooms`);
             setRoom(roomRes.data);
             
-            const bookingRes = await axios.get('http://localhost:5000/api/bookings/all');
+            const bookingRes = await axios.get(`${API_URL}/api/bookings/all`);
             setBookings(bookingRes.data);
         } catch (err) {
             console.log("Error fetching data:", err);
@@ -42,7 +45,7 @@ const Admin = () => {
                 description: room.description 
             };
             
-            await axios.put('http://localhost:5000/api/rooms', dataToSend);
+            await axios.put(`${API_URL}/api/rooms`, dataToSend);
             setMessage("✅ Updated Successfully!");
             fetchData();
             setTimeout(() => setMessage(''), 3000);
@@ -55,7 +58,7 @@ const Admin = () => {
     const handleDeleteInquiry = async (id) => {
         if (window.confirm("Are you sure you want to delete this inquiry?")) {
             try {
-                await axios.delete(`http://localhost:5000/api/bookings/${id}`);
+                await axios.delete(`${API_URL}/api/bookings/${id}`);
                 setMessage("✅ Inquiry deleted successfully!");
                 fetchData(); // Refresh the list
                 setTimeout(() => setMessage(''), 3000);
@@ -77,7 +80,7 @@ const Admin = () => {
         }
 
         try {
-            await axios.post('http://localhost:5000/api/rooms/upload-image', formData);
+            await axios.post(`${API_URL}/api/rooms/upload-image`, formData);
             setMessage("✅ Images added!");
             fetchData();
         } catch (err) {
@@ -90,7 +93,7 @@ const Admin = () => {
     const handleClearGallery = async () => {
         if (window.confirm("Are you sure you want to delete ALL photos?")) {
             try {
-                await axios.delete('http://localhost:5000/api/rooms/clear-images');
+                await axios.delete(`${API_URL}/api/rooms/clear-images`);
                 setMessage("✅ Gallery cleared!");
                 fetchData();
             } catch (err) {

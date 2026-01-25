@@ -19,7 +19,7 @@
             formData.append('images', fileInput.files[0]);
 
             try {
-                const response = await fetch('http://localhost:5000/api/rooms/upload-image', {
+                const response = await fetch('https://kainchi-stay-production.up.railway.app/api/rooms/upload-image', {
                     method: 'POST',
                     body: formData
                 });
