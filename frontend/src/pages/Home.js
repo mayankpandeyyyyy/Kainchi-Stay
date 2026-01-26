@@ -13,7 +13,7 @@ const Home = () => {
     const [error, setError] = useState(false);
     const [bookingData, setBookingData] = useState({ 
         customerName: '', 
-        countryCode: '+91', // Added country code
+        countryCode: '+91',
         phoneNumber: '', 
         checkInDate: '', 
         checkOutDate: '', 
@@ -23,6 +23,9 @@ const Home = () => {
     });
     const whatsappNumber = "917830410814"; 
     const BACKEND_URL = 'https://kainchi-stay-production.up.railway.app';
+
+    // Get today's date in YYYY-MM-DD format for date validation
+    const today = new Date().toISOString().split('T')[0];
 
     const fetchData = useCallback(async () => {
         try {
@@ -40,7 +43,6 @@ const Home = () => {
         fetchData();
     }, [fetchData]);
 
-    // Validation Logic
     const validateIndianPhone = (num) => {
         const regex = /^[6-9]\d{9}$/; 
         return regex.test(num);
@@ -49,7 +51,6 @@ const Home = () => {
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
         
-        // Data Engineering: Validate before sending to pipeline
         if (bookingData.countryCode === '+91' && !validateIndianPhone(bookingData.phoneNumber)) {
             alert("Please enter a valid 10-digit Indian mobile number.");
             return;
@@ -57,7 +58,7 @@ const Home = () => {
 
         const payload = {
             ...bookingData,
-            phoneNumber: `${bookingData.countryCode}${bookingData.phoneNumber}` // Combine for DB
+            phoneNumber: `${bookingData.countryCode}${bookingData.phoneNumber}`
         };
 
         try {
@@ -248,25 +249,27 @@ const Home = () => {
                                 />
                             </div>
                             
-                            <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-                                <div style={{ flex: 1 }}>
+                            {/* RESPONSIVE FLEX CONTAINER FOR DATES */}
+                            <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap' }}>
+                                <div style={{ flex: '1 1 180px' }}>
                                     <label style={{ fontSize: '0.8rem', fontWeight: '600', color: '#666' }}>Check-in</label>
-                                    <input required type="date" value={bookingData.checkInDate} onChange={e => setBookingData({...bookingData, checkInDate: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
+                                    <input required type="date" min={today} value={bookingData.checkInDate} onChange={e => setBookingData({...bookingData, checkInDate: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', boxSizing: 'border-box' }} />
                                 </div>
-                                <div style={{ flex: 1 }}>
+                                <div style={{ flex: '1 1 180px' }}>
                                     <label style={{ fontSize: '0.8rem', fontWeight: '600', color: '#666' }}>Check-out</label>
-                                    <input required type="date" value={bookingData.checkOutDate} onChange={e => setBookingData({...bookingData, checkOutDate: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
+                                    <input required type="date" min={bookingData.checkInDate || today} value={bookingData.checkOutDate} onChange={e => setBookingData({...bookingData, checkOutDate: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', boxSizing: 'border-box' }} />
                                 </div>
                             </div>
 
-                            <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-                                <div style={{ flex: 1 }}>
+                            {/* RESPONSIVE FLEX CONTAINER FOR ROOMS/GUESTS */}
+                            <div style={{ display: 'flex', gap: '10px', marginBottom: '15px', flexWrap: 'wrap' }}>
+                                <div style={{ flex: '1 1 180px' }}>
                                     <label style={{ fontSize: '0.8rem', fontWeight: '600', color: '#666' }}>Rooms Required</label>
-                                    <input type="number" min="1" value={bookingData.roomsRequired} onChange={e => setBookingData({...bookingData, roomsRequired: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
+                                    <input type="number" min="1" value={bookingData.roomsRequired} onChange={e => setBookingData({...bookingData, roomsRequired: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', boxSizing: 'border-box' }} />
                                 </div>
-                                <div style={{ flex: 1 }}>
+                                <div style={{ flex: '1 1 180px' }}>
                                     <label style={{ fontSize: '0.8rem', fontWeight: '600', color: '#666' }}>Total Guests</label>
-                                    <input type="number" min="1" value={bookingData.guests} onChange={e => setBookingData({...bookingData, guests: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd' }} />
+                                    <input type="number" min="1" value={bookingData.guests} onChange={e => setBookingData({...bookingData, guests: e.target.value})} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ddd', boxSizing: 'border-box' }} />
                                 </div>
                             </div>
 
