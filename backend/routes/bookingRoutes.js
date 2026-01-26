@@ -5,6 +5,17 @@ const Booking = require('../models/Booking');
 // POST: Save a new callback request from the website
 router.post('/request-call', async (req, res) => {
     try {
+        const { phoneNumber, customerName } = req.body;
+
+        // Data Engineering: Server-side data validation
+        if (!phoneNumber || phoneNumber.length < 10) {
+            return res.status(400).json({ error: "Invalid phone number provided" });
+        }
+        
+        if (!customerName) {
+            return res.status(400).json({ error: "Customer name is required" });
+        }
+
         console.log("Incoming Booking:", req.body); 
         const newInquiry = new Booking(req.body);
         await newInquiry.save();
