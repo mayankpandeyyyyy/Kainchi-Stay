@@ -13,6 +13,7 @@ const Home = () => {
     const [error, setError] = useState(false);
     const [bookingData, setBookingData] = useState({ 
         customerName: '', 
+        countryCode: '+91', // Added country code
         phoneNumber: '', 
         checkInDate: '', 
         checkOutDate: '', 
@@ -39,13 +40,31 @@ const Home = () => {
         fetchData();
     }, [fetchData]);
 
+    // Validation Logic
+    const validateIndianPhone = (num) => {
+        const regex = /^[6-9]\d{9}$/; 
+        return regex.test(num);
+    };
+
     const handleBookingSubmit = async (e) => {
         e.preventDefault();
+        
+        // Data Engineering: Validate before sending to pipeline
+        if (bookingData.countryCode === '+91' && !validateIndianPhone(bookingData.phoneNumber)) {
+            alert("Please enter a valid 10-digit Indian mobile number.");
+            return;
+        }
+
+        const payload = {
+            ...bookingData,
+            phoneNumber: `${bookingData.countryCode}${bookingData.phoneNumber}` // Combine for DB
+        };
+
         try {
-            await axios.post(`${BACKEND_URL}/api/bookings/request-call`, bookingData);
+            await axios.post(`${BACKEND_URL}/api/bookings/request-call`, payload);
             alert("Jai Maharaj-ji! Your request is sent. We will call you soon.");
             setShowForm(false);
-            setBookingData({ customerName: '', phoneNumber: '', checkInDate: '', checkOutDate: '', roomsRequired: 1, guests: 1, requirements: '' });
+            setBookingData({ customerName: '', countryCode: '+91', phoneNumber: '', checkInDate: '', checkOutDate: '', roomsRequired: 1, guests: 1, requirements: '' });
         } catch (err) {
             alert("Submission failed. Please check your connection or use WhatsApp.");
         }
@@ -64,35 +83,21 @@ const Home = () => {
     return (
         <div style={{ paddingTop: '75px' }}>
             {/* 1. TASKBAR */}
-            <nav className="navbar" style={{ padding: '0 4%' }}>
+            <nav className="navbar">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'nowrap' }}>
-                    <div style={{
-                        fontFamily: 'Playfair Display', 
-                        fontSize: 'clamp(1.1rem, 4vw, 1.4rem)', 
-                        color: '#476449', 
-                        fontWeight: '700',
-                        whiteSpace: 'nowrap'
-                    }}>
+                    <div className="nav-brand">
                         Kainchi Stay
                     </div>
                     
-                    <div style={{ 
-                        fontSize: 'clamp(0.7rem, 3vw, 0.9rem)', 
-                        color: '#d4a373', 
-                        fontWeight: '500',
-                        borderLeft: '1px solid #ddd',
-                        paddingLeft: '12px',
-                        whiteSpace: 'nowrap',
-                        lineHeight: '1'
-                    }}>
+                    <div className="nav-tagline">
                         सबका प्रेम, सबकी सेवा
                     </div>
                 </div>
 
-                <div className="nav-links" style={{ gap: 'clamp(10px, 3vw, 30px)' }}>
+                <div className="nav-links">
                     <button 
                         onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}
-                        style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontFamily: 'inherit', fontSize: 'clamp(0.8rem, 2.5vw, 0.95rem)', fontWeight: '500', color: '#5d6d5e' }}
+                        className="nav-btn"
                     >
                         Home
                     </button>
@@ -222,7 +227,26 @@ const Home = () => {
                             <input required type="text" placeholder="Your Name" value={bookingData.customerName} onChange={e => setBookingData({...bookingData, customerName: e.target.value})} style={{ width: '100%', padding: '12px', marginBottom: '15px', borderRadius: '8px', border: '1px solid #ddd' }} />
                             
                             <label style={{ fontSize: '0.8rem', fontWeight: '600', color: '#666' }}>Phone Number</label>
-                            <input required type="tel" placeholder="Phone Number" value={bookingData.phoneNumber} onChange={e => setBookingData({...bookingData, phoneNumber: e.target.value})} style={{ width: '100%', padding: '12px', marginBottom: '15px', borderRadius: '8px', border: '1px solid #ddd' }} />
+                            <div style={{ display: 'flex', gap: '8px', marginBottom: '15px' }}>
+                                <select 
+                                    value={bookingData.countryCode} 
+                                    onChange={e => setBookingData({...bookingData, countryCode: e.target.value})}
+                                    style={{ padding: '10px', borderRadius: '8px', border: '1px solid #ddd', backgroundColor: '#f9f9f9', fontWeight: '500' }}
+                                >
+                                    <option value="+91">+91 (IN)</option>
+                                    <option value="+1">+1 (US)</option>
+                                    <option value="+44">+44 (UK)</option>
+                                </select>
+                                <input 
+                                    required 
+                                    type="tel" 
+                                    placeholder="Mobile Number" 
+                                    maxLength="10"
+                                    value={bookingData.phoneNumber} 
+                                    onChange={e => setBookingData({...bookingData, phoneNumber: e.target.value.replace(/\D/g, '')})} 
+                                    style={{ flex: 1, padding: '12px', borderRadius: '8px', border: '1px solid #ddd' }} 
+                                />
+                            </div>
                             
                             <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
                                 <div style={{ flex: 1 }}>
