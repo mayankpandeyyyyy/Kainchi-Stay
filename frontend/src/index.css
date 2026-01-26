@@ -23,7 +23,6 @@ h1, h2, h3 {
   color: var(--primary);
 }
 
-
 .navbar {
   position: fixed;
   top: 0;
@@ -41,19 +40,40 @@ h1, h2, h3 {
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+.nav-brand {
+    font-family: 'Playfair Display';
+    font-size: clamp(1.1rem, 4vw, 1.4rem);
+    color: #476449;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.nav-tagline {
+    font-size: clamp(0.7rem, 3vw, 0.9rem);
+    color: #d4a373;
+    font-weight: 500;
+    border-left: 1px solid #ddd;
+    padding-left: 12px;
+    white-space: nowrap;
+    line-height: 1;
+}
+
 .nav-links {
   display: flex;
   gap: 30px;
 }
 
-.nav-links a {
+.nav-links a, .nav-btn {
   text-decoration: none;
   color: var(--primary);
   font-weight: 500;
   font-size: 0.95rem;
   cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  padding: 0;
 }
-
 
 .fade-in {
   animation: fadeInUp 0.8s ease-out forwards;
@@ -64,7 +84,6 @@ h1, h2, h3 {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Layout */
 .container {
   width: 92%;
   max-width: 950px;
@@ -103,19 +122,29 @@ h1, h2, h3 {
   border: 1px solid #f0f0f0;
 }
 
-
 @media (max-width: 768px) {
   .navbar {
-    padding: 0 4%; 
-    height: 65px;
+    padding: 15px 4%; 
+    height: auto;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .nav-tagline {
+      border-left: none;
+      padding-left: 0;
+      font-size: 0.75rem;
   }
 
   .nav-links {
     gap: 15px; 
+    width: 100%;
+    justify-content: center;
   }
 
-  .nav-links a {
-    font-size: 0.8rem;
+  .nav-links a, .nav-btn {
+    font-size: 0.85rem;
+    padding: 5px 8px;
   }
 
   .glass-card {
@@ -131,34 +160,4 @@ h1, h2, h3 {
 
   h1 { font-size: 1.8rem; } 
   h2 { font-size: 1.5rem; }
-  
- 
-  .room-list-container { 
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-}
-
-
-@media (max-width: 768px) {
-  .navbar {
-    padding: 0 4%; 
-    height: auto;  
-    padding-top: 15px;
-    padding-bottom: 15px;
-    flex-direction: column; 
-    gap: 10px;
-  }
-
-  .nav-links {
-    gap: 15px; 
-    width: 100%;
-    justify-content: center; 
-  }
-
-  .nav-links a {
-    font-size: 0.85rem;
-    padding: 8px 12px; 
-  }
 }
