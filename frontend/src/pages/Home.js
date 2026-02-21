@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import { Bed, Wifi, MapPin, MessageCircle, Info, Navigation, Image as ImageIcon, PhoneCall, X} from 'lucide-react';
+import { Bed, Wifi, MapPin, MessageCircle, Info, Navigation, Image as ImageIcon, PhoneCall, X, Calendar} from 'lucide-react';
 
 // Assets
 import ashramImg from '../assets/ashram.png';
@@ -10,6 +10,7 @@ import babaImg from '../assets/baba.jpg';
 const Home = () => {
     const [room, setRoom] = useState(null);
     const [showForm, setShowForm] = useState(false);
+    const [showWaCalendar, setShowWaCalendar] = useState(false); // New state for WA calendar
     const [error, setError] = useState(false);
     const [bookingData, setBookingData] = useState({ 
         customerName: '', 
@@ -69,6 +70,18 @@ const Home = () => {
         } catch (err) {
             alert("Submission failed. Please check your connection or use WhatsApp.");
         }
+    };
+
+    // New function to handle the tailored WhatsApp message
+    const handleWhatsAppClick = () => {
+        if (!bookingData.checkInDate || !bookingData.checkOutDate) {
+            alert("Please select dates first to send a tailored inquiry.");
+            return;
+        }
+        const message = `Jai Neem Karoli Baba! \nI am interested in a stay. I need a stay from ${bookingData.checkInDate} to ${bookingData.checkOutDate}.`;
+        const encodedMessage = encodeURIComponent(message);
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodedMessage}`, '_blank');
+        setShowWaCalendar(false);
     };
 
     if (error) return (
@@ -287,6 +300,22 @@ const Home = () => {
 
             {/* FLOATING ACTION STACK */}
             <div style={{ position: 'fixed', bottom: '30px', right: '30px', display: 'flex', flexDirection: 'column', gap: '15px', zIndex: 3000, alignItems: 'flex-end' }}>
+                
+                {/* NEW: WHATSAPP DATE PICKER POPUP */}
+                {showWaCalendar && (
+                    <div style={{ backgroundColor: 'white', padding: '15px', borderRadius: '15px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)', width: '220px', border: '1px solid #eee', marginBottom: '5px' }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                            <span style={{ fontSize: '0.8rem', fontWeight: '700', color: '#25D366' }}>Select Dates</span>
+                            <X size={14} style={{ cursor: 'pointer' }} onClick={() => setShowWaCalendar(false)} />
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            <input type="date" min={today} value={bookingData.checkInDate} onChange={e => setBookingData({...bookingData, checkInDate: e.target.value})} style={{ fontSize: '0.8rem', padding: '5px', borderRadius: '5px', border: '1px solid #ddd' }} />
+                            <input type="date" min={bookingData.checkInDate || today} value={bookingData.checkOutDate} onChange={e => setBookingData({...bookingData, checkOutDate: e.target.value})} style={{ fontSize: '0.8rem', padding: '5px', borderRadius: '5px', border: '1px solid #ddd' }} />
+                            <button onClick={handleWhatsAppClick} style={{ backgroundColor: '#25D366', color: 'white', border: 'none', padding: '8px', borderRadius: '5px', fontWeight: '700', cursor: 'pointer', fontSize: '0.8rem' }}>Send Message</button>
+                        </div>
+                    </div>
+                )}
+
                 <button 
                     onClick={() => setShowForm(true)}
                     style={{ 
@@ -306,9 +335,9 @@ const Home = () => {
                     <span>Request Call</span>
                 </button>
 
-                <a href={`https://wa.me/${whatsappNumber}?text=Jai%20Baba!%20Interested%20in%20stay.`} 
-                   target="_blank" rel="noreferrer" 
-                   style={{ 
+                <button 
+                    onClick={() => setShowWaCalendar(!showWaCalendar)}
+                    style={{ 
                        backgroundColor: '#25D366', 
                        color: 'white', 
                        padding: '12px 20px', 
@@ -317,12 +346,13 @@ const Home = () => {
                        alignItems: 'center', 
                        gap: '10px', 
                        boxShadow: '0 8px 20px rgba(37, 211, 102, 0.3)', 
-                       textDecoration: 'none',
+                       border: 'none',
+                       cursor: 'pointer',
                        fontWeight: '600'
-                   }}>
+                    }}>
                     <MessageCircle size={22} />
                     <span>WhatsApp</span>
-                </a>
+                </button>
             </div>
         </div>
     );
