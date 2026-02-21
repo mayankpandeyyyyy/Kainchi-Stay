@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import { Bed, Wifi, MapPin, MessageCircle, Info, Navigation, Image as ImageIcon, PhoneCall, X, Calendar} from 'lucide-react';
+import { Bed, Wifi, MapPin, MessageCircle, Info, Navigation, Image as ImageIcon, PhoneCall, X } from 'lucide-react';
 
 // Assets
 import ashramImg from '../assets/ashram.png';
